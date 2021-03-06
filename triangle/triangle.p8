@@ -13,7 +13,7 @@ end
 
 function _draw()
 	cls()
-	print("draw and rotate triangles",0,0,7)
+	print("draw and rotate triangle",0,0,7)
 	print("move: cursor keys",0,6,6)
 
 	rotate_triangle(tr.ang,ca.cx,ca.cy,tr.cl)

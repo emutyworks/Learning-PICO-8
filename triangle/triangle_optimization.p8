@@ -2,19 +2,33 @@ pico-8 cartridge // http://www.pico-8.com
 version 30
 __lua__
 function _init()
-	tr ={
+	tr = {
+		ang=0
+	}
+
+	to1 = {
 		c = {
 			{x=0,y=-10},
 			{x=-10,y=5},
 			{x=10,y=10},
 		},
-		ang=0,
 		cl=10
 	}
-
-	ca = {
-		cx=60,
-		cy=60
+	to2 = {
+		c = {
+			{x=0,y=-10},
+			{x=10,y=5},
+			{x=-10,y=10},
+		},
+		cl=11
+	}
+	to3 = {
+		c = {
+			{x=0,y=-10},
+			{x=10,y=5},
+			{x=-10,y=10},
+		},
+		cl=9
 	}
 end
 
@@ -23,11 +37,13 @@ function _draw()
 	print("draw and rotate triangle",0,0,7)
 	print("move: cursor keys",0,6,6)
 
-	rotate_triangle()
+	rotate_triangle(20,40,tr.ang,to1)
+	rotate_triangle(50,55,tr.ang,to2)
+	rotate_triangle(80,40,tr.ang,to3)
 end
 
 function _update60()
-	input()
+	tr.ang = input(tr.ang)
 end
 
 function rotate(ang,x,y)
@@ -37,11 +53,11 @@ function rotate(ang,x,y)
 	return rx,ry
 end
 
-function rotate_triangle()
+function rotate_triangle(cx,cy,ang,to)
 	local tc = {}
-	for k,v in pairs(tr.c) do
-		local rx,ry = rotate(tr.ang,v.x,v.y)
-		add(tc,{x=rx+ca.cx,y=ry+ca.cy})
+	for k,v in pairs(to.c) do
+		local rx,ry = rotate(ang,v.x,v.y)
+		add(tc,{x=rx+cx,y=ry+cy})
 	end
 
 	if tc[1].y > tc[2].y then
@@ -55,9 +71,9 @@ function rotate_triangle()
 	end
 
 	local p = {}
-	_calc_line(tc[1].x,tc[1].y,tc[3].x,tc[3].y,tr.cl,p,0)
-	_calc_line(tc[1].x,tc[1].y,tc[2].x,tc[2].y,tr.cl,p,1)
-	_calc_line(tc[2].x,tc[2].y,tc[3].x,tc[3].y,tr.cl,p,2)
+	_calc_line(tc[1].x,tc[1].y,tc[3].x,tc[3].y,to.cl,p,0)
+	_calc_line(tc[1].x,tc[1].y,tc[2].x,tc[2].y,to.cl,p,1)
+	_calc_line(tc[2].x,tc[2].y,tc[3].x,tc[3].y,to.cl,p,2)
 
 	local ad = 1
 	if tc[1].x > tc[2].x then
@@ -65,13 +81,12 @@ function rotate_triangle()
 	end	
 
 	for k,v in pairs(p) do
-		line(v.x0,k,v.x1,k,tr.cl)
+			line(v.x0,k,v.x1,k,to.cl)
 	end
 end
 
 function _calc_line(x0,y0,x1,y1,cl,p,flg)
 	line(x0,y0,x1,y1,cl)
-
 	if (x0>=x1 and y0>=y1) or y0>=y1 then
 		x0,y0,x1,y1 = x1,y1,x0,y0
 	end
@@ -111,7 +126,7 @@ function _calc_line(x0,y0,x1,y1,cl,p,flg)
 			add(l,{x=x,y=y})
 		end
 	end
-	
+
 	if flg == 0 then
 		for k,v in pairs(l) do
 			if p[v.y] and p[v.y].x0 > v.x then 
@@ -129,14 +144,15 @@ function _calc_line(x0,y0,x1,y1,cl,p,flg)
 	end
 end
 
-function input()
+function input(ang)
 	if btn(0) then -- Left
-		tr.ang = set_angle(tr.ang, 0.01)
+		ang = set_angle(ang, 0.01)
 	elseif btn(1) then -- Right
-		tr.ang = set_angle(tr.ang, -0.01)
+		ang = set_angle(ang, -0.01)
 	elseif btn(2) then -- Top
 	elseif btn(3) then -- Bottom
 	end
+	return ang 
 end
 
 function set_angle(ang, inc)

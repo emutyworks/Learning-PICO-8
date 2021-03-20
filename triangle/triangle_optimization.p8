@@ -75,11 +75,6 @@ function rotate_triangle(cx,cy,ang,to)
 	_calc_line(tc[1].x,tc[1].y,tc[2].x,tc[2].y,to.cl,p,1)
 	_calc_line(tc[2].x,tc[2].y,tc[3].x,tc[3].y,to.cl,p,2)
 
-	local ad = 1
-	if tc[1].x > tc[2].x then
-		ad = -1
-	end	
-
 	for k,v in pairs(p) do
 			line(v.x0,k,v.x1,k,to.cl)
 	end
